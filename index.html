@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .dropbtn {
+            padding: 12px 25px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .dropbtn:hover {
+            background-color: #ff6b6b;
+            transform: scale(1.05);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #16213e;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: #ffffff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #1a759f;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e94560;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(233, 69, 96, 0.3);
+        }
+
+        .days-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .day-section {
+            padding: 20px;
+            background-color: rgba(22, 33, 62, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .day-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .day-title {
+            cursor: pointer;
+            margin: 0 0 15px 0;
+            padding: 12px;
+            background-color: #0f3460;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.5rem;
+            color: #ffffff;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .day-title:hover {
+            background-color: #1a759f;
+        }
+
+        .day-content {
+            padding: 15px 0;
+        }
+
+        .entry {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #1a759f;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .entry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button {
+            margin: 0 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #ff6b6b;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 107, 107, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        #clearAll {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #clearAll:hover {
+            background-color: #e94560;
+            transform: scale(1.05);
+        }
+
+        /* Load Google Fonts for Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    </style>
+</head>
+<body>
+    <div class="dropdown">
+        <button class="dropbtn" id="seasonDropdown">Winter Season</button>
+        <div class="dropdown-content">
+            <a href="#" onclick="changeSeason('Winter')">Winter</a>
+            <a href="#" onclick="changeSeason('Spring')">Spring</a>
+            <a href="#" onclick="changeSeason('Summer')">Summer</a>
+            <a href="#" onclick="changeSeason('Fall')">Fall</a>
+        </div>
+    </div>
+
+    <h1 id="seasonTitle">Winter Season Anime Progress</h1>
+    
+    <div class="days-container">
+        <div id="monday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('monday')">Monday</h2>
+            <div id="monday-content" class="day-content"></div>
+            <button onclick="addEntry('monday')">+ Add Anime</button>
+        </div>
+
+        <div id="tuesday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('tuesday')">Tuesday</h2>
+            <div id="tuesday-content" class="day-content"></div>
+            <button onclick="addEntry('tuesday')">+ Add Anime</button>
+        </div>
+
+        <div id="wednesday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('wednesday')">Wednesday</h2>
+            <div id="wednesday-content" class="day-content"></div>
+            <button onclick="addEntry('wednesday')">+ Add Anime</button>
+        </div>
+
+        <div id="thursday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('thursday')">Thursday</h2>
+            <div id="thursday-content" class="day-content"></div>
+            <button onclick="addEntry('thursday')">+ Add Anime</button>
+        </div>
+
+        <div id="friday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('friday')">Friday</h2>
+            <div id="friday-content" class="day-content"></div>
+            <button onclick="addEntry('friday')">+ Add Anime</button>
+        </div>
+
+        <div id="saturday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('saturday')">Saturday</h2>
+            <div id="saturday-content" class="day-content"></div>
+            <button onclick="addEntry('saturday')">+ Add Anime</button>
+        </div>
+
+        <div id="sunday" class="day-section">
+            <h2 class="day-title" onclick="toggleDay('sunday')">Sunday</h2>
+            <div id="sunday-content" class="day-content"></div>
+            <button onclick="addEntry('sunday')">+ Add Anime</button>
+        </div>
+    </div>
+
+    <div id="errorMessage" class="error" style="display: none;">An error occurred. Check the console for details.</div>
+
+    <button id="clearAll" style="margin-top: 20px; padding: 10px 20px; background-color: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer;">Clear All</button>
+
+    <script>
+        let currentSeason = 'Winter';
+
+        // Load saved data for the current season when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            changeSeason(currentSeason); // Load Winter by default
+        });
+
+        // Toggle day content visibility
+        function toggleDay(day) {
+            const content = document.getElementById(`${day}-content`);
+            content.classList.toggle('hidden');
+        }
+
+        // Change season and update UI/content
+        function changeSeason(season) {
+            currentSeason = season;
+            document.getElementById('seasonDropdown').textContent = `${season} Season`;
+            document.getElementById('seasonTitle').textContent = `${season} Season Anime Progress`;
+            loadProgress(); // Load progress for the selected season
+            document.getElementById('clearAll').onclick = function() {
+                if (confirm(`Are you sure you want to clear all ${season} anime entries? This cannot be undone.`)) {
+                    localStorage.removeItem(`${season.toLowerCase()}AnimeProgress`);
+                    ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+                        const content = document.getElementById(`${day}-content`);
+                        if (content) {
+                            content.innerHTML = '';
+                        }
+                    });
+                }
+            };
+        }
+
+        // Add a new anime entry
+        function addEntry(day) {
+            const namePrompt = prompt(`Enter anime name for ${currentSeason} Season:`);
+            if (!namePrompt || !namePrompt.trim()) {
+                alert("Please enter a valid anime name.");
+                return;
+            }
+            const name = namePrompt.trim();
+            const sanitizedName = name.replace(/\s+/g, '-').replace(/'/g, "\\'"); // Sanitize for IDs and safety
+            try {
+                const content = document.getElementById(`${day}-content`);
+                if (!content) {
+                    throw new Error(`Content element for ${day} not found`);
+                }
+                const entry = document.createElement('div');
+                entry.className = 'entry';
+                entry.innerHTML = `
+                    ${name} - <span id="progress-${day}-${sanitizedName}">0/?</span>
+                    <div>
+                        <button onclick="setTotal('${day}', '${sanitizedName}')">Set Total</button>
+                        <button onclick="updateProgress('${day}', '${sanitizedName}', -1)">-</button>
+                        <button onclick="updateProgress('${day}', '${sanitizedName}', 1)">+</button>
+                        <button onclick="deleteEntry('${day}', '${sanitizedName}')">Delete</button>
+                    </div>
+                `;
+                content.appendChild(entry);
+                saveProgress();
+            } catch (error) {
+                console.error('Error adding entry:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
+        // Set the total number of episodes
+        function setTotal(day, name) {
+            const totalEpisodes = prompt("Enter total number of episodes:");
+            if (totalEpisodes && !isNaN(totalEpisodes)) {
+                const progressSpan = document.getElementById(`progress-${day}-${name}`);
+                const [current] = progressSpan.textContent.split('/').map(Number) || [0];
+                const newTotal = parseInt(totalEpisodes, 10);
+                const adjustedCurrent = Math.min(current, newTotal); // Cap current at new total
+                progressSpan.textContent = `${adjustedCurrent}/${newTotal}`;
+                saveProgress();
+            } else {
+                alert("Please enter a valid number for total episodes.");
+            }
+        }
+
+        // Update progress
+        function updateProgress(day, name, change) {
+            const progressSpan = document.getElementById(`progress-${day}-${name}`);
+            if (!progressSpan) {
+                console.error(`Progress span for ${day}-${name} not found`);
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            let [current, total] = progressSpan.textContent.split('/').map(x => x === '?' ? null : parseInt(x, 10));
+            if (total === null) {
+                alert("Please set the total number of episodes first.");
+                return;
+            }
+            current = Math.max(0, Math.min(current + change, total)); // Ensure current is within bounds
+            progressSpan.textContent = `${current}/${total}`;
+            saveProgress();
+        }
+
+        // Delete an anime entry
+        function deleteEntry(day, name) {
+            if (confirm("Are you sure you want to delete this anime?")) {
+                try {
+                    const content = document.getElementById(`${day}-content`);
+                    if (!content) {
+                        throw new Error(`Content element for ${day} not found`);
+                    }
+                    const entries = content.getElementsByClassName('entry');
+                    for (let entry of entries) {
+                        const entryName = entry.textContent.split(' - ')[0].trim();
+                        const sanitizedEntryName = entryName.replace(/\s+/g, '-').replace(/'/g, "\\'");
+                        if (sanitizedEntryName === name) {
+                            content.removeChild(entry);
+                            saveProgress();
+                            return;
+                        }
+                    }
+                    throw new Error(`Entry for ${name} not found`);
+                } catch (error) {
+                    console.error('Error deleting entry:', error);
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            }
+        }
+
+        // Save progress to localStorage for the current season
+        function saveProgress() {
+            const progress = {};
+            ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+                const content = document.getElementById(`${day}-content`);
+                if (content) {
+                    const entries = content.getElementsByClassName('entry');
+                    progress[day] = {};
+                    for (let entry of entries) {
+                        const name = entry.textContent.split(' - ')[0].trim();
+                        const sanitizedName = name.replace(/\s+/g, '-').replace(/'/g, "\\'");
+                        const progressText = entry.querySelector('span').textContent;
+                        progress[day][name] = progressText;
+                    }
+                }
+            });
+            localStorage.setItem(`${currentSeason.toLowerCase()}AnimeProgress`, JSON.stringify(progress));
+        }
+
+        // Load progress from localStorage for the current season
+        function loadProgress() {
+            const savedProgress = localStorage.getItem(`${currentSeason.toLowerCase()}AnimeProgress`);
+            ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+                const content = document.getElementById(`${day}-content`);
+                if (content) {
+                    content.innerHTML = ''; // Clear existing content before loading new season
+                }
+            });
+            if (savedProgress) {
+                try {
+                    const progress = JSON.parse(savedProgress);
+                    ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+                        const content = document.getElementById(`${day}-content`);
+                        if (content && progress[day]) {
+                            Object.entries(progress[day]).forEach(([name, prog]) => {
+                                const sanitizedName = name.replace(/\s+/g, '-').replace(/'/g, "\\'");
+                                const entry = document.createElement('div');
+                                entry.className = 'entry';
+                                entry.innerHTML = `
+                                    ${name} - <span id="progress-${day}-${sanitizedName}">${prog}</span>
+                                    <div>
+                                        <button onclick="setTotal('${day}', '${sanitizedName}')">Set Total</button>
+                                        <button onclick="updateProgress('${day}', '${sanitizedName}', -1)">-</button>
+                                        <button onclick="updateProgress('${day}', '${sanitizedName}', 1)">+</button>
+                                        <button onclick="deleteEntry('${day}', '${sanitizedName}')">Delete</button>
+                                    </div>
+                                `;
+                                content.appendChild(entry);
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading progress:', error);
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            }
+        }
+
+        // Save progress before page unload for the current season
+        window.addEventListener('beforeunload', saveProgress);
+    </script>
+</body>
+</html>
